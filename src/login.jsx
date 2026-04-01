@@ -1,4 +1,7 @@
 import React from "react";
+import logo from "../src/images/logo.png"; 
+import reelpic from "../src/images/reelpic.png";
+import fbLogo from "../src/images/fb_logo2.png"
 
 function login() {
 
@@ -9,14 +12,14 @@ function login() {
 
                 {/* Left Black */}
                 <div className="bg-black w-full lg:w-[65%]   border-r-3 border-[#494D53] p-13">
-                    <img src="./src/images/logo.png" className="lg:w-19 w-15  mx-auto lg:mx-0"></img>
+                    <img src={logo} className="lg:w-19 w-15  mx-auto lg:mx-0"></img>
                     <h1 className="text-white text-[2.55rem] pb-0 ms-2 font-medium text-center p-5 lg:block hidden" style={{ fontFamily: "Helvetica, Arial, sans-serif" }} >See everyday moments from your
                         <span className="text-center text-[2.35rem] font-medium lg:block hidden" style={{ background: "linear-gradient(90deg, #FF4718, #FF5903, #ff0069, #d300c5, #DD00B0)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", }} >
                             close friends.
                         </span>
                     </h1>
                     <figure>
-                        <img src="./src/images/reelpic.png" className=" mx-auto lg:block hidden w-full xl:w-4/6 2xl:w-full"></img>
+                        <img src={reelpic} className=" mx-auto lg:block hidden w-full xl:w-4/6 2xl:w-full"></img>
                     </figure>
                 </div>
 
@@ -73,7 +76,7 @@ function login() {
 
                         <button className="border border-none p-2.5 w-full rounded-[100px] text-white  font-medium hover:bg-[#363638] cursor-pointer mt-4 hover:text-white">Forgot password?</button>
 
-                        <button type="button" className="border border-[#50545B] p-2.5 w-full rounded-[100px] text-white font-medium hover:bg-[#363638] cursor-pointer mt-15 flex items-center justify-center gap-2"> <img src="./src/images/fb_logo2.png" className="w-6" />Log in with Facebook </button>
+                        <button type="button" className="border border-[#50545B] p-2.5 w-full rounded-[100px] text-white font-medium hover:bg-[#363638] cursor-pointer mt-15 flex items-center justify-center gap-2"> <img src={fbLogo} className="w-6" />Log in with Facebook </button>
 
                         <button className="border border-[#4BA9FE] p-2.5 w-full rounded-[100px] text-[#4BA9FE]  font-medium hover:bg-[#363638] cursor-pointer mt-4 ">Create new account</button>
 
