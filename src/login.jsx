@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "../src/images/logo.png";
 import reelpic from "../src/images/reelpic.png";
-import fbLogo from "../src/images/fb_logo2.png"
+import fbLogo from "../src/images/fb_logo2.png";
 
 function login() {
 
@@ -174,6 +174,8 @@ function login() {
 
 
                 <h6 className="mx-auto text-xs mt-3 text-[#737476] inline" > &nbsp; © 2026 Instagram from Meta</h6>
+                <h6 className="mx-auto text-xs mt-3 text-[#737476]" >Made with ❤️ by Gaurav</h6>
+
             </div>
 
 
