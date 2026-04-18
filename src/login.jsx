@@ -1,9 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../src/images/logo.png";
 import reelpic from "../src/images/reelpic.png";
 import fbLogo from "../src/images/fb_logo2.png";
 
+import { useNavigate } from "react-router-dom";
+
 function login() {
+
+    // Authentication
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("")
+    const navigate = useNavigate();
+
+    const handleLogin = async () => {
+        if (!username || !password) {
+            alert("Please enter username and password");
+            return;
+        }
+
+        try {
+            const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (data.status === "success") {
+                localStorage.setItem("auth", "true");
+                window.location.href = "/dashboard";   // Force reload for safety
+            } else {
+                alert(data.message || "Invalid Credentials");
+            }
+        } catch (err) {
+            console.error("Login Error:", err);
+            alert("Cannot connect to server. Make sure Flask is running on port 5000.");
+        }
+    };
 
     return (
 
@@ -37,6 +73,7 @@ function login() {
                                 type="text"
                                 name="loginId"
                                 placeholder=" "
+                                onChange={(e) => setUsername(e.target.value)}
                                 className="peer w-full autofill:bg-[#1F1F22] p-4 pt-6 bg-transparent border border-[#50545B] rounded-[15px] text-white outline-none focus:border-blue-500 hover:border-white"
                             />
 
@@ -61,6 +98,7 @@ function login() {
                                 type="password"
                                 name="password"
                                 placeholder=" "
+                                onChange={(e) => setPassword(e.target.value)}
                                 className="peer w-full p-4 pt-6 bg-transparent border border-[#50545B] rounded-[15px] text-white outline-none focus:border-blue-500 hover:border-white"
                             />
                             <label
@@ -77,7 +115,7 @@ function login() {
                             </label>
                         </div>
 
-                        <button type="submit" className="border border-[#0064E0] p-2.5 w-full rounded-[100px] text-white bg-[#0064E0] font-medium hover:bg-[#015bc8] hover:text-[#c8c8c8] cursor-pointer">Log in</button>
+                        <button onClick={handleLogin} type="button" className="border border-[#0064E0] p-2.5 w-full rounded-[100px] text-white bg-[#0064E0] font-medium hover:bg-[#015bc8] hover:text-[#c8c8c8] cursor-pointer">Log in</button>
 
                         <button className="border border-none p-2.5 w-full rounded-[100px] text-white  font-medium hover:bg-[#363638] cursor-pointer mt-4 hover:text-white">Forgot password?</button>
 

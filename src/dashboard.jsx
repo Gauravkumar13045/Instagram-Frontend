@@ -4,7 +4,7 @@ import back from "../src/images/icons/backSlide.png";
 import next from "../src/images/icons/nextSlide.png";
 // import login from "../src/login.jsx";
 import flower from "../src/images/flower.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 const stories = [
@@ -79,7 +79,7 @@ function Dashboard() {
 
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, seterror] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         setTimeout(() => {
@@ -97,7 +97,7 @@ function Dashboard() {
 
                 })
                 .catch(err => {
-                    seterror("Failed to load posts. Please try again.")
+                    setError("Failed to load posts. Please try again.")
                     setLoading(false)
                 });
         }, 2000);
@@ -140,6 +140,18 @@ function Dashboard() {
                 });
         }, 2000);
     }, []);
+
+    // navigation
+// navigation
+const navigate = useNavigate();
+
+useEffect(() => {
+    const auth = localStorage.getItem("auth");
+    if (!auth || auth !== "true") {
+        navigate("/", { replace: true });
+    }
+}, [navigate]);
+
 
     return (
 
@@ -491,8 +503,6 @@ function Dashboard() {
                         ))}
                     </>
                 )}
-
-
 
 
 
