@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import Signup from "./signup.jsx"
 import Login from "./login.jsx";
 import Dashboard from "./dashboard.jsx";
 
@@ -20,19 +20,20 @@ function App() {
     }
 
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route 
-                    path="/" 
-                    element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} 
-                />
+        // <BrowserRouter>
+        //     <Routes>
+        //         <Route 
+        //             path="/" 
+        //             element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} 
+        //         />
                 
-                <Route 
-                    path="/dashboard" 
-                    element={isAuth ? <Dashboard /> : <Navigate to="/" replace />} 
-                />
-            </Routes>
-        </BrowserRouter>
+        //         <Route 
+        //             path="/dashboard" 
+        //             element={isAuth ? <Dashboard /> : <Navigate to="/" replace />} 
+        //         />
+        //     </Routes>
+        // </BrowserRouter>
+        <Signup></Signup>
     );
 }
 

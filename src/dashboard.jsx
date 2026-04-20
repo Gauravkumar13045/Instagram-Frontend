@@ -142,15 +142,15 @@ function Dashboard() {
     }, []);
 
     // navigation
-// navigation
-const navigate = useNavigate();
+    // navigation
+    const navigate = useNavigate();
 
-useEffect(() => {
-    const auth = localStorage.getItem("auth");
-    if (!auth || auth !== "true") {
-        navigate("/", { replace: true });
-    }
-}, [navigate]);
+    useEffect(() => {
+        const auth = localStorage.getItem("auth");
+        if (!auth || auth !== "true") {
+            navigate("/", { replace: true });
+        }
+    }, [navigate]);
 
 
     return (
@@ -586,6 +586,7 @@ useEffect(() => {
 
                             <p className="mt-3 text-[#858686] ">
                                 © 2026 INSTAGRAM FROM META
+                                
                             </p>
 
                         </div>
