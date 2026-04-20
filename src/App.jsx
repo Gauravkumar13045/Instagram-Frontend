@@ -20,20 +20,20 @@ function App() {
     }
 
     return (
-        // <BrowserRouter>
-        //     <Routes>
-        //         <Route 
-        //             path="/" 
-        //             element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} 
-        //         />
+        <BrowserRouter>
+            <Routes>
+                <Route 
+                    path="/" 
+                    element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} 
+                />
                 
-        //         <Route 
-        //             path="/dashboard" 
-        //             element={isAuth ? <Dashboard /> : <Navigate to="/" replace />} 
-        //         />
-        //     </Routes>
-        // </BrowserRouter>
-        <Signup></Signup>
+                <Route 
+                    path="/dashboard" 
+                    element={isAuth ? <Dashboard /> : <Navigate to="/" replace />} 
+                />
+            </Routes>
+        </BrowserRouter>
+        // <Signup></Signup>
     );
 }
 
