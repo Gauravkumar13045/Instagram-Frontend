@@ -315,7 +315,7 @@ function login() {
                     <option>Afrikaans</option>
                     <option>العربية</option>
                     <option>Čeština</option>
-                    <option>Dansk</option>
+                    <option>Dansk</option>  
                     <option>Deutsch</option>
                     <option>Ελληνικά</option>
                     <option>English (UK)</option>
