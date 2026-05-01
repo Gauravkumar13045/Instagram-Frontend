@@ -5,14 +5,29 @@ import Login from "./login.jsx";
 import Dashboard from "./dashboard.jsx";
 
 function App() {
-    const [isAuth, setIsAuth] = useState(null);   // null = loading state
+    const [isAuth, setIsAuth] = useState(null);
 
     useEffect(() => {
-        const auth = localStorage.getItem("auth");
-        setIsAuth(auth === "true");
+        const checkAuth = async () => {
+            try {
+                const res = await fetch("http://localhost:5000/profile", {
+                    credentials: "include"
+                });
+
+                if (res.ok) {
+                    setIsAuth(true);
+                } else {
+                    setIsAuth(false);
+                }
+            } catch (err) {
+                setIsAuth(false);
+            }
+        };
+
+        checkAuth();
     }, []);
 
-    
+
     if (isAuth === null) {
         return <div className="min-h-screen bg-black flex items-center justify-center">
             <p className="text-white">Loading...</p>
@@ -22,18 +37,20 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route 
-                    path="/" 
-                    element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} 
+                <Route
+                    path="/"
+                    element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />}
                 />
-                
-                <Route 
-                    path="/dashboard" 
-                    element={isAuth ? <Dashboard /> : <Navigate to="/" replace />} 
+
+                <Route
+                    path="/dashboard"
+                    element={isAuth ? <Dashboard /> : <Navigate to="/" replace />}
                 />
             </Routes>
         </BrowserRouter>
+
         // <Signup></Signup>
+
     );
 }
 
