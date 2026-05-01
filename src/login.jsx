@@ -4,10 +4,8 @@ import reelpic from "../src/images/reelpic.png";
 import fbLogo from "../src/images/fb_logo2.png";
 import { useNavigate } from "react-router-dom";
 
-import { useNavigate } from "react-router-dom";
-
 function login() {
-    const navigate = useNavigate();
+   
     const [loginForm, setLoginForm] = useState({
         email: "",
         password: ""
