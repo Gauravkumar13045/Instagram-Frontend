@@ -3,6 +3,7 @@ import logo from "../src/images/logo.png";
 import reelpic from "../src/images/reelpic.png";
 import fbLogo from "../src/images/fb_logo2.png";
 import { useNavigate } from "react-router-dom";
+import Signup from "./signup";
 
 function login() {
    
@@ -85,7 +86,9 @@ function login() {
 
 
         try {
+            // const response = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/signin", {
             const response = await fetch("http://localhost:5000/signin", {
+
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -135,7 +138,9 @@ function login() {
         }
 
         try {
-            const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/login", {
+            // const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/login", {
+            const res = await fetch("http://localhost:5000/login", {
+
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -147,7 +152,7 @@ function login() {
 
             if (data.status === "success") {
                 localStorage.setItem("auth", "true");
-                window.location.href = "/dashboard";   // Force reload for safety
+                window.location.href = "/dashboard";   
             } else {
                 alert(data.message || "Invalid Credentials");
             }
@@ -258,13 +263,13 @@ function login() {
                             </label>
                         </div>
 
-                        <button type="submit" className="border border-[#0064E0] cursor-not-allowed p-2.5 w-full rounded-[100px] text-white bg-[#0064E0] font-medium hover:bg-[#015bc8] hover:text-[#c8c8c8] ">Log in</button>
+                        <button type="submit" className="border border-[#0064E0] cursor-pointer p-2.5 w-full rounded-[100px] text-white bg-[#0064E0] font-medium hover:bg-[#015bc8] hover:text-[#c8c8c8] ">Log in</button>
 
-                        <button className="border border-none p-2.5 w-full rounded-[100px] text-white  font-medium hover:bg-[#363638] cursor-pointer mt-4 hover:text-white">Forgot password?</button>
+                        <button type="button" className="border border-none p-2.5 w-full rounded-[100px] text-white  font-medium hover:bg-[#363638] cursor-pointer mt-4 hover:text-white">Forgot password?</button>
 
                         <button type="button" className="border border-[#50545B] p-2.5 w-full rounded-[100px] text-white font-medium hover:bg-[#363638] cursor-pointer mt-15 flex items-center justify-center gap-2"> <img src={fbLogo} className="w-6" />Log in with Facebook </button>
 
-                        <button className="border border-[#4BA9FE] p-2.5 w-full rounded-[100px] text-[#4BA9FE]  font-medium hover:bg-[#363638] cursor-pointer mt-4 ">Create new account</button>
+                        <button type="button" onClick={() => navigate('/signup')} className="border border-[#4BA9FE] p-2.5 w-full rounded-[100px] text-[#4BA9FE]  font-medium hover:bg-[#363638] cursor-pointer mt-4 ">Create new account</button>
 
                         <svg aria-label="Meta logo" className="w-15 mt-5 mx-auto" role="img" viewBox="0 0 500 100">
                             <path

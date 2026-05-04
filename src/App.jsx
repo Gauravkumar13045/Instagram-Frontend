@@ -3,6 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Signup from "./signup.jsx"
 import Login from "./login.jsx";
 import Dashboard from "./dashboard.jsx";
+import meta from "../src/images/meta.png";
+import logo from "../src/images/logo.png";
+import Loading from "./loading.jsx"
+
 
 function App() {
     const [isAuth, setIsAuth] = useState(null);
@@ -10,7 +14,9 @@ function App() {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await fetch("http://localhost:5000/profile", {
+                const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/profile", {
+                // const res = await fetch("http://localhost:5000/profile", {
+
                     credentials: "include"
                 });
 
@@ -30,7 +36,7 @@ function App() {
 
     if (isAuth === null) {
         return <div className="min-h-screen bg-black flex items-center justify-center">
-            <p className="text-white">Loading...</p>
+             <Loading />
         </div>;
     }
 
@@ -46,10 +52,14 @@ function App() {
                     path="/dashboard"
                     element={isAuth ? <Dashboard /> : <Navigate to="/" replace />}
                 />
+
+               <Route path="/signup" element={<Signup/>}></Route>
+
+               <Route path="/signin" element={<Login/>}></Route>
             </Routes>
         </BrowserRouter>
 
-        // <Signup></Signup>
+        
 
     );
 }
