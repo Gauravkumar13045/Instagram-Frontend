@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import logo from "../src/images/logo.png";
 import back from "../src/images/icons/backSlide.png";
 import next from "../src/images/icons/nextSlide.png";
-// import login from "../src/login.jsx";
 import flower from "../src/images/flower.png";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -83,7 +82,9 @@ function Dashboard() {
 
     useEffect(() => {
         setTimeout(() => {
-            fetch("./json/post.json")
+            fetch("http://localhost:5000/posts", {
+                credentials: "include"
+            })
                 .then(res => {
                     if (!res.ok) {
                         throw new Error("Failed to fetch posts");
@@ -121,7 +122,9 @@ function Dashboard() {
     const [suggestloading, setSuggestloading] = useState(true)
     useEffect(() => {
         setTimeout(() => {
-            fetch("/json/suggestion.json")
+            fetch("http://localhost:5000/suggestions", {
+                credentials: "include"
+            })
                 .then(res => {
                     if (!res.ok) {
                         throw new Error("Check Internet connection");
@@ -168,7 +171,10 @@ function Dashboard() {
 
     const handleLogout = async () => {
         try {
-            const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/logout", {
+            // const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/logout", {
+            const res = await fetch("http://localhost:5000/logout", {
+
+
                 method: "POST",
                 credentials: "include"
             });
@@ -191,6 +197,139 @@ function Dashboard() {
         }
     }, [showLogoutModal]);
 
+    const [create, setCreate] = useState(false);
+    const [postPopup, setPostPopup] = useState(false);
+    const [sharePost, setSharePost] = useState(false);
+
+    useEffect(() => {
+        if (create || more || showLogoutModal) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto"
+        }
+
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+
+    }, [create, more, showLogoutModal]);
+
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+
+            console.log(file);
+            setSelectedFile(file);
+
+            const urlBlob = URL.createObjectURL(file);
+
+
+            console.log(urlBlob);
+            setPostPopup(false)
+
+            setPreview(urlBlob);
+            setCreate(false);
+
+        }
+
+    };
+
+    useEffect(() => {
+        return () => {
+            if (preview) {
+                URL.revokeObjectURL(preview);
+            }
+        };
+
+    }, [preview]);
+
+    const [caption, setCaption] = useState("")
+
+    const handleUploadImage = async () => {
+
+        if (!selectedFile) {
+            alert("No file Selected !!");
+            return;
+        }
+
+        const formData = new FormData();
+
+
+        formData.append("image", selectedFile);
+        formData.append("caption", caption);
+
+        try {
+            const responseImage = await fetch("http://localhost:5000/upload", { method: "POST", body: formData, credentials: "include" });
+
+
+
+            const data = await responseImage.json();
+
+            console.log(data);
+
+            if (!responseImage.ok) {
+                throw new Error("Upload failed");
+            }
+
+
+
+            alert("Post uploaded successfully 🔥");
+
+            setPreview(null);
+
+            setSelectedFile(null);
+
+            setCaption("");
+
+            window.location.reload();
+
+
+
+
+
+
+        } catch (err) {
+            console.log(err);
+            alert("Upload failed");
+
+        }
+
+
+
+
+    };
+
+    const [currentUser, setCurrentUser] = useState(null);
+
+    useEffect(() => {
+
+        fetch("http://localhost:5000/profile", {
+            credentials: "include"
+        })
+
+            .then(res => res.json())
+
+            .then(data => {
+                console.log(data);
+                setCurrentUser(data);
+            })
+
+            .catch(err => {
+                console.log(err);
+            });
+
+    }, []);
+
+
+
+
+
+
+
 
 
 
@@ -200,7 +339,7 @@ function Dashboard() {
         <div className=" min-h-screen block md:flex bg-transparent">
 
             {showLogoutModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-70  flex items-center justify-center z-50">
+                <div className="fixed inset-0  bg-black bg-opacity-70  flex items-center justify-center z-50">
 
                     <div className="bg-[#2c2c2c] rounded-xl w-96 text-center p-6">
 
@@ -250,43 +389,270 @@ function Dashboard() {
                 <img src={logo} className="w-10 cursor-pointer p-2 border-w hover:bg-[#25282D] rounded"></img>
                 <div className=" h-full content-center space-y-0 ">
 
-                    <div className="flex items-center gap-4  py-2 hover:bg-gray-800 rounded-lg">
+                    <div className="flex items-center gap-4  py-2 hover:bg-gray-800 rounded-lg cursor-pointer">
                         <svg aria-label="Home" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Home</title><path d="m21.762 8.786-7-6.68a3.994 3.994 0 0 0-5.524 0l-7 6.681A4.017 4.017 0 0 0 1 11.68V19c0 2.206 1.794 4 4 4h3.005a1 1 0 0 0 1-1v-7.003a2.997 2.997 0 0 1 5.994 0V22a1 1 0 0 0 1 1H19c2.206 0 4-1.794 4-4v-7.32a4.02 4.02 0 0 0-1.238-2.894Z"></path></svg>
                         <Link to="" className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ">Home </Link>
                     </div>
 
-                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg">
+                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg cursor-pointer">
                         <svg aria-label="Reels" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Reels</title><path d="M22.935 7.468c-.063-1.36-.307-2.142-.512-2.67a5.341 5.341 0 0 0-1.27-1.95 5.345 5.345 0 0 0-1.95-1.27c-.53-.206-1.311-.45-2.672-.513C15.333 1.012 14.976 1 12 1s-3.333.012-4.532.065c-1.36.063-2.142.307-2.67.512-.77.298-1.371.69-1.95 1.27a5.36 5.36 0 0 0-1.27 1.95c-.206.53-.45 1.311-.513 2.672C1.012 8.667 1 9.024 1 12s.012 3.333.065 4.532c.063 1.36.307 2.142.512 2.67.297.77.69 1.372 1.27 1.95.58.581 1.181.974 1.95 1.27.53.206 1.311.45 2.672.513C8.667 22.988 9.024 23 12 23s3.333-.012 4.532-.065c1.36-.063 2.142-.307 2.67-.512a5.33 5.33 0 0 0 1.95-1.27 5.356 5.356 0 0 0 1.27-1.95c.206-.53.45-1.311.513-2.672.053-1.198.065-1.555.065-4.531s-.012-3.333-.065-4.532Zm-1.998 8.972c-.05 1.07-.228 1.652-.38 2.04-.197.51-.434.874-.82 1.258a3.362 3.362 0 0 1-1.258.82c-.387.151-.97.33-2.038.379-1.162.052-1.51.063-4.441.063s-3.28-.01-4.44-.063c-1.07-.05-1.652-.228-2.04-.38a3.354 3.354 0 0 1-1.258-.82 3.362 3.362 0 0 1-.82-1.258c-.151-.387-.33-.97-.379-2.038C3.011 15.28 3 14.931 3 12s.01-3.28.063-4.44c.05-1.07.228-1.652.38-2.04.197-.51.434-.875.82-1.26a3.372 3.372 0 0 1 1.258-.819c.387-.15.97-.329 2.038-.378C8.72 3.011 9.069 3 12 3s3.28.01 4.44.063c1.07.05 1.652.228 2.04.38.51.197.874.433 1.258.82.385.382.622.747.82 1.258.151.387.33.97.379 2.038C20.989 8.72 21 9.069 21 12s-.01 3.28-.063 4.44Zm-4.584-6.828-5.25-3a2.725 2.725 0 0 0-2.745.01A2.722 2.722 0 0 0 6.988 9v6c0 .992.512 1.88 1.37 2.379.432.25.906.376 1.38.376.468 0 .937-.123 1.365-.367l5.25-3c.868-.496 1.385-1.389 1.385-2.388s-.517-1.892-1.385-2.388Zm-.993 3.04-5.25 3a.74.74 0 0 1-.748-.003.74.74 0 0 1-.374-.649V9a.74.74 0 0 1 .374-.65.737.737 0 0 1 .748-.002l5.25 3c.341.196.378.521.378.652s-.037.456-.378.651Z"></path></svg>
                         <Link to="" className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ">Reels</Link>
                     </div>
 
-                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg">
+                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg cursor-pointer">
                         <svg aria-label="Messages" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Messages</title><path d="M13.973 20.046 21.77 6.928C22.8 5.195 21.55 3 19.535 3H4.466C2.138 3 .984 5.825 2.646 7.456l4.842 4.752 1.723 7.121c.548 2.266 3.571 2.721 4.762.717Z" fill="none" stroke="currentColor"  ></path><line fill="none" stroke="currentColor" x1="7.488" x2="15.515" y1="12.208" y2="7.641"></line></svg>
                         <Link to="" className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ">Messages</Link>
                     </div>
 
 
-                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg">
+                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg cursor-pointer" >
                         <svg aria-label="Search" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24" ><title>Search</title><path d="M19 10.5A8.5 8.5 0 1 1 10.5 2a8.5 8.5 0 0 1 8.5 8.5Z" fill="none" stroke="currentColor" ></path><line fill="none" stroke="currentColor" x1="16.511" x2="22" y1="16.511" y2="22"></line></svg>
-                        <Link to="" className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">Search</Link>
+                        <Link className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ">Search</Link>
+                    </div>
+
+                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg cursor-pointer" >
+                        <svg aria-label="Notifications" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Notifications</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                        <Link className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ">Notifications</Link>
                     </div>
 
 
-                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg">
-                        <svg aria-label="Notifications" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24" ><title>Notifications</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
-                        <Link to="" className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">Notifications</Link>
-                    </div>
+
+                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg cursor-pointer" ref={dropdownRef}>
+
+                        <svg onClick={() => setPostPopup(true)} aria-label="New post" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24" ><title>New post</title><path d="M21 11h-8V3a1 1 0 1 0-2 0v8H3a1 1 0 1 0 0 2h8v8a1 1 0 1 0 2 0v-8h8a1 1 0 1 0 0-2Z"></path></svg>
+                        <button onClick={() => setPostPopup(true)} className={`text-white whitespace-nowrap opacity-0 -translate-x-4 cursor-pointer group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ${create ? "font-bold scale-105" : "font-medium"}`}>Create</button>
+
+                        {create && !preview && (
 
 
-                    <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg">
-                        <svg aria-label="New post" className="text-white shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24" ><title>New post</title><path d="M21 11h-8V3a1 1 0 1 0-2 0v8H3a1 1 0 1 0 0 2h8v8a1 1 0 1 0 2 0v-8h8a1 1 0 1 0 0-2Z"></path></svg>
-                        <Link to="" className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">Create</Link>
+                            <div className="fixed inset-0 bg-black/80  z-100 flex items-center justify-center">
+
+
+                                <div className="bg-[#1c1c1c] w-full max-w-140 rounded-2xl overflow-hidden">
+
+
+                                    <div className="flex items-center justify-between border-b border-gray-700 px-4 py-3">
+                                        <button
+                                            onClick={() => {
+                                                setCreate(false)
+                                                setPostPopup(false)
+                                            }}
+
+
+                                            className="text-gray-400 hover:text-white text-right cursor-pointer"
+                                        >
+                                            ✕
+                                        </button>
+                                        <h2 className="text-white font-semibold text-lg">Create new post</h2>
+                                        <div className="w-6"></div>
+                                    </div>
+
+
+                                    <div className="p-12 flex flex-col items-center justify-center text-center">
+                                        <div className="flex gap-2 mb-6">
+                                            <svg aria-label="Icon to represent media such as images or videos" className="text-white" fill="currentColor" height="77" role="img" viewBox="0 0 97.6 77.3" width="96"><title>Icon to represent media such as images or videos</title><path d="M16.3 24h.3c2.8-.2 4.9-2.6 4.8-5.4-.2-2.8-2.6-4.9-5.4-4.8s-4.9 2.6-4.8 5.4c.1 2.7 2.4 4.8 5.1 4.8zm-2.4-7.2c.5-.6 1.3-1 2.1-1h.2c1.7 0 3.1 1.4 3.1 3.1 0 1.7-1.4 3.1-3.1 3.1-1.7 0-3.1-1.4-3.1-3.1 0-.8.3-1.5.8-2.1z" fill="currentColor"></path><path d="M84.7 18.4 58 16.9l-.2-3c-.3-5.7-5.2-10.1-11-9.8L12.9 6c-5.7.3-10.1 5.3-9.8 11L5 51v.8c.7 5.2 5.1 9.1 10.3 9.1h.6l21.7-1.2v.6c-.3 5.7 4 10.7 9.8 11l34 2h.6c5.5 0 10.1-4.3 10.4-9.8l2-34c.4-5.8-4-10.7-9.7-11.1zM7.2 10.8C8.7 9.1 10.8 8.1 13 8l34-1.9c4.6-.3 8.6 3.3 8.9 7.9l.2 2.8-5.3-.3c-5.7-.3-10.7 4-11 9.8l-.6 9.5-9.5 10.7c-.2.3-.6.4-1 .5-.4 0-.7-.1-1-.4l-7.8-7c-1.4-1.3-3.5-1.1-4.8.3L7 49 5.2 17c-.2-2.3.6-4.5 2-6.2zm8.7 48c-4.3.2-8.1-2.8-8.8-7.1l9.4-10.5c.2-.3.6-.4 1-.5.4 0 .7.1 1 .4l7.8 7c.7.6 1.6.9 2.5.9.9 0 1.7-.5 2.3-1.1l7.8-8.8-1.1 18.6-21.9 1.1zm76.5-29.5-2 34c-.3 4.6-4.3 8.2-8.9 7.9l-34-2c-4.6-.3-8.2-4.3-7.9-8.9l2-34c.3-4.4 3.9-7.9 8.4-7.9h.5l34 2c4.7.3 8.2 4.3 7.9 8.9z" fill="currentColor"></path><path d="M78.2 41.6 61.3 30.5c-2.1-1.4-4.9-.8-6.2 1.3-.4.7-.7 1.4-.7 2.2l-1.2 20.1c-.1 2.5 1.7 4.6 4.2 4.8h.3c.7 0 1.4-.2 2-.5l18-9c2.2-1.1 3.1-3.8 2-6-.4-.7-.9-1.3-1.5-1.8zm-1.4 6-18 9c-.4.2-.8.3-1.3.3-.4 0-.9-.2-1.2-.4-.7-.5-1.2-1.3-1.1-2.2l1.2-20.1c.1-.9.6-1.7 1.4-2.1.8-.4 1.7-.3 2.5.1L77 43.3c1.2.8 1.5 2.3.7 3.4-.2.4-.5.7-.9.9z" fill="currentColor"></path></svg>
+                                        </div>
+
+                                        <p className="text-white text-xl font-light mb-8">
+                                            Drag photos and videos here
+                                        </p>
+
+                                        <input type="file"
+                                            id="fileUpload"
+                                            className="hidden"
+                                            accept="image/*,video/*"
+                                            onChange={handleFileChange}
+                                        />
+
+
+                                        <label
+                                            htmlFor="fileUpload"
+                                            className="bg-[#0095f6] hover:bg-[#1877f2] text-white font-semibold px-6 py-2 rounded-lg transition-all cursor-pointer"
+                                        >
+                                            Select from computer
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        )}
+
+                        {preview && (
+                            <div className="fixed inset-0 bg-black/60  z-110 flex items-center justify-center   ">
+                                <div className="bg-[#1c1c1c] w-full max-w-125 rounded-2xl overflow-hidden border-2 border-gray-900 max-h-130">
+
+
+                                    <div className="flex items-center justify-between border-b border-gray-700 px-4 py-3 ">
+                                        <button
+                                            onClick={() => {
+                                                setPreview(null);
+                                                setSelectedFile(null);
+                                            }}
+                                            className="text-gray-400 hover:text-white text-xl"
+                                        >
+                                            ✕
+                                        </button>
+                                        <h2 className="text-white font-semibold text-lg">Create new post</h2>
+                                        <button className="bg-[#0095f6] hover:bg-[#1877f2] px-5 py-1.5 rounded-lg text-white font-semibold text-sm" onClick={() => { setSharePost(true) }}>
+                                            Next
+                                        </button>
+                                    </div>
+
+
+                                    <div className={`p-8 flex items-center justify-center bg-black min-h-100 ${preview ? "cursor-grab" : "cursor-pointer"}`}>
+                                        {selectedFile?.type.startsWith("video") ? (
+                                            <video src={preview} controls />
+                                        ) : (
+                                            <img src={preview} />
+                                        )}
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        )}
+
+
+
+
+
+
+                        {postPopup && (
+                            <div className="fixed transition-all bottom-60 bg-[#262626] rounded border-gray-700 p-3 shadow-xl z-50 cursor-pointer" onClick={() => setCreate(true)} >
+                                <div className="flex items-center gap-30">
+                                    <span className="text-white font-medium text-[15px]">Post</span>
+                                    <svg
+                                        aria-label="Post"
+                                        className="text-white"
+                                        fill="currentColor"
+                                        height="22"
+                                        role="img"
+                                        viewBox="0 0 24 24"
+                                        width="22"
+                                    >
+                                        <title>Post</title>
+                                        <path d="m18.509 14.757-4.285-2.474a.857.857 0 0 0-1.286.743v4.948a.857.857 0 0 0 1.286.742l4.285-2.474a.857.857 0 0 0 0-1.485ZM5.225 3.977a1.25 1.25 0 1 0 1.25 1.25 1.25 1.25 0 0 0-1.25-1.25ZM19.5 7.5h-3v-3a4.004 4.004 0 0 0-4-4h-8a4.004 4.004 0 0 0-4 4v8a4.004 4.004 0 0 0 4 4h3v3a4.004 4.004 0 0 0 4 4h8a4.004 4.004 0 0 0 4-4v-8a4.004 4.004 0 0 0-4-4Zm-12 7h-3a1.997 1.997 0 0 1-1.882-1.349l2.607-2.607L7.5 12.819Zm.23-4.28L6.41 8.9a1.679 1.679 0 0 0-2.37 0L2.5 10.44V4.5a2.003 2.003 0 0 1 2-2h8a2.003 2.003 0 0 1 2 2v3h-3a3.992 3.992 0 0 0-3.77 2.72ZM21.5 19.5a2.003 2.003 0 0 1-2 2h-8a2.003 2.003 0 0 1-2-2v-8a2.003 2.003 0 0 1 2-2h8a2.003 2.003 0 0 1 2 2Z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        )}
+
+
+
+
+
+                        {sharePost && (
+                            <div className="fixed inset-0 bg-black/10  z-110 flex items-center justify-center">
+                                <div className="bg-[#1c1c1c] w-full max-w-5xl h-[90vh] rounded-2xl overflow-hidden flex flex-col border-l-2 border-b-2 border-[#1c1c1c]">
+
+
+                                    <div className="flex items-center justify-between border-b border-gray-700 px-6 py-3">
+                                        <button
+                                            onClick={() => {
+                                                setPreview(null);
+                                                setSelectedFile(null);
+                                                setCreate(false);
+                                                setSharePost(false);
+                                            }}
+                                            className="text-gray-400 hover:text-white text-3xl font-light cursor-pointer"
+                                        >
+                                            <svg aria-label="Back" className="text-white" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><title>Back</title><line fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" x1="2.909" x2="22.001" y1="12.004" y2="12.004"></line><polyline fill="none" points="9.276 4.726 2.001 12.004 9.276 19.274" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></polyline></svg>
+                                        </button>
+
+                                        <h2 className="text-white font-semibold text-lg">Create new post</h2>
+
+                                        <button
+                                            onClick={handleUploadImage}
+                                            className="text-[#0095f6] font-semibold text-lg hover:text-[#43b3fe]  cursor-pointer"
+                                        >
+                                            Share
+                                        </button>
+                                    </div>
+
+
+                                    <div className="flex flex-1 overflow-hidden">
+
+
+                                        <div className="flex-1 bg-black flex items-center justify-center object-contain max-h-full max-w-full">
+
+                                            {selectedFile?.type.startsWith("video/") ? (
+                                                <video src={preview} controls />
+                                            ) : (
+                                                <img src={preview} />
+                                            )}
+                                        </div>
+
+
+                                        <div className="w-85 border-l border-gray-700 flex flex-col">
+
+
+                                            <div className="flex items-center gap-3 p-4 border-b border-gray-700">
+                                                {/* <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white font-bold"> */}
+                                                <img src={currentUser?.avatar} className=" object-cover cursor-pointer w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white font-bold" />
+
+                                                {/* </div> */}
+                                                <span className="text-white font-semibold">{currentUser?.username}</span>
+                                            </div>
+
+
+                                            <div className="flex-1 p-4">
+
+                                                <textarea
+                                                    placeholder="Write a caption..."
+                                                    value={caption}
+                                                    onChange={(e) => setCaption(e.target.value)}
+                                                    className="w-full bg-transparent text-white resize-none outline-none text-sm h-[95%]"
+                                                    maxLength={2200}
+                                                />
+
+
+                                                <div className="flex items-center justify-between">
+                                                    <svg aria-label="Emoji" className="text-white cursor-pointer" fill="currentColor" height="20" role="img" viewBox="0 0 24 24" width="20"><title>Emoji</title><path d="M15.83 10.997a1.167 1.167 0 1 0 1.167 1.167 1.167 1.167 0 0 0-1.167-1.167Zm-6.5 1.167a1.167 1.167 0 1 0-1.166 1.167 1.167 1.167 0 0 0 1.166-1.167Zm5.163 3.24a3.406 3.406 0 0 1-4.982.007 1 1 0 1 0-1.557 1.256 5.397 5.397 0 0 0 8.09 0 1 1 0 0 0-1.55-1.263ZM12 .503a11.5 11.5 0 1 0 11.5 11.5A11.513 11.513 0 0 0 12 .503Zm0 21a9.5 9.5 0 1 1 9.5-9.5 9.51 9.51 0 0 1-9.5 9.5Z"></path></svg>
+                                                    <div className="text-right text-xs text-gray-400 ">
+                                                        {caption.length}/2,200
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div className="border-t border-gray-700">
+                                                <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-800 cursor-pointer">
+                                                    <span className="text-white">Add location</span>
+                                                    <svg aria-label="Add location" className="text-white" fill="currentColor" height="16" role="img" viewBox="0 0 24 24" width="16"><title>Add location</title><path d="M12.053 8.105a1.604 1.604 0 1 0 1.604 1.604 1.604 1.604 0 0 0-1.604-1.604Zm0-7.105a8.684 8.684 0 0 0-8.708 8.66c0 5.699 6.14 11.495 8.108 13.123a.939.939 0 0 0 1.2 0c1.969-1.628 8.109-7.424 8.109-13.123A8.684 8.684 0 0 0 12.053 1Zm0 19.662C9.29 18.198 5.345 13.645 5.345 9.66a6.709 6.709 0 0 1 13.417 0c0 3.985-3.944 8.538-6.709 11.002Z"></path></svg>
+                                                </div>
+                                                <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-800 cursor-pointer">
+                                                    <span className="text-white">Add collaborators</span>
+                                                    <svg aria-label="Add collaborators" className="text-white" fill="currentColor" height="16" role="img" viewBox="0 0 24 24" width="16"><title>Add collaborators</title><path d="M21 10a1 1 0 0 0-1 1v9c0 .932-.643 1.71-1.507 1.931C18.429 19.203 16.199 17 13.455 17H8.55c-2.745 0-4.974 2.204-5.037 4.933A1.999 1.999 0 0 1 2 20V6c0-1.103.897-2 2-2h9a1 1 0 1 0 0-2H4C1.794 2 0 3.794 0 6v14c0 2.206 1.794 4 4 4h14c2.206 0 4-1.794 4-4v-9a1 1 0 0 0-1-1zM8.549 19h4.906a3.05 3.05 0 0 1 3.045 3H5.505a3.05 3.05 0 0 1 3.044-3z"></path><path d="M6.51 11.002c0 2.481 2.02 4.5 4.502 4.5 2.48 0 4.499-2.019 4.499-4.5s-2.019-4.5-4.5-4.5a4.506 4.506 0 0 0-4.5 4.5zm7 0c0 1.378-1.12 2.5-2.498 2.5-1.38 0-2.501-1.122-2.501-2.5s1.122-2.5 2.5-2.5a2.502 2.502 0 0 1 2.5 2.5zM23.001 3.002h-2.004V1a1 1 0 1 0-2 0v2.002H17a1 1 0 1 0 0 2h1.998v2.003a1 1 0 1 0 2 0V5.002h2.004a1 1 0 1 0 0-2z"></path></svg>
+                                                </div>
+                                                <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-800 cursor-pointer">
+                                                    <span className="text-white">Accessibility</span>
+                                                    <svg aria-label="Down chevron icon" className="text-white rotate-180" fill="currentColor" height="16" role="img" viewBox="0 0 24 24" width="16"><title>Down chevron icon</title><path d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"></path></svg>
+                                                </div>
+                                                <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-800 cursor-pointer">
+                                                    <span className="text-white">Advanced settings</span>
+                                                    <svg aria-label="Down chevron icon" className="text-white rotate-180" fill="currentColor" height="16" role="img" viewBox="0 0 24 24" width="16"><title>Down chevron icon</title><path d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"></path></svg>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+
+
+
+
+
                     </div>
+
 
                     <div className="flex items-center gap-4 py-2 hover:bg-gray-800 rounded-lg group">
 
                         <div className="w-10 h-10 shrink-0 rounded-full overflow-hidden cursor-pointer ml-1">
-                            <img src={flower} className="w-full h-full object-cover" />
+                            <img src={currentUser?.avatar} className="w-full h-full object-cover" />
                         </div>
 
                         <Link to="" className="text-white whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
@@ -304,37 +670,10 @@ function Dashboard() {
 
 
                     <svg onClick={() => setMore(!more)} aria-label="Settings" className={`text-white shrink-0 cursor-pointer w-10 p-2 ${more ? "font-bold" : "font-medium"}`} fill="currentColor" role="img" viewBox="0 0 24 24" ><title>Settings</title><line fill="none" stroke="currentColor" x1="3" x2="21" y1="4" y2="4"></line><line fill="none" stroke="currentColor" x1="3" x2="21" y1="12" y2="12"></line><line fill="none" stroke="currentColor" x1="3" x2="21" y1="20" y2="20"></line></svg>
-
-
                     <button onClick={() => setMore(!more)} className={`text-white cursor-pointer whitespace-nowrap opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ${more ? "font-bold scale-105" : "font-medium"}`}>More</button>
 
 
 
-                    {showLogoutModal && (
-                        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-
-                            <div className="bg-[#2c2c2c] rounded-xl w-96 text-center p-6">
-
-                                <h2 className="text-white text-xl font-semibold">
-                                    Logging Out
-                                </h2>
-
-                                <p className="text-gray-400 mt-2">
-                                    You need to log back in.
-                                </p>
-
-                                <hr className="my-4 border-gray-700" />
-
-                                <button
-                                    onClick={handleLogout}
-                                    className="text-blue-400 font-semibold"
-                                >
-                                    Log in
-                                </button>
-
-                            </div>
-                        </div>
-                    )}
 
 
 
@@ -482,7 +821,7 @@ function Dashboard() {
 
 
                 {/* POSTS */}
-                <div className="flex flex-col gap-6 p-0 md:p-8  pt-5 mx-auto ">
+                <div className="flex flex-col p-0 md:p-8  pt-5 mx-auto ">
 
 
                     {loading && (
@@ -592,6 +931,7 @@ function Dashboard() {
                                 <div >
                                     <div className="inline-flex">
                                         <svg aria-label="Like" onClick={handleLike} className=" text-white hover:transition-transform hover:scale-110  ease-in-out  shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Like</title><path d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"></path></svg>
+                                       
                                         {/* <svg aria-label="Unlike" onClick={handleLike} className=" text-white hover:transition-transform hover:scale-110  ease-in-out  shrink-0 cursor-pointer w-10 p-2" fill="currentColor" role="img" viewBox="0 0 48 48"><title>Unlike</title><path d="M34.6 3.1c-4.5 0-7.9 1.8-10.6 5.6-2.7-3.7-6.1-5.5-10.6-5.5C6 3.1 0 9.6 0 17.6c0 7.3 5.4 12 10.6 16.5.6.5 1.3 1.1 1.9 1.7l2.3 2c4.4 3.9 6.6 5.9 7.6 6.5.5.3 1.1.5 1.6.5s1.1-.2 1.6-.5c1-.6 2.8-2.2 7.8-6.8l2-1.8c.7-.6 1.3-1.2 2-1.7C42.7 29.6 48 25 48 17.6c0-8-6-14.5-13.4-14.5z"></path></svg> */}
                                         <a className="text-white font-medium mt-2 cursor-pointer">{post.likes}<span>K</span></a>
                                     </div>
@@ -617,7 +957,7 @@ function Dashboard() {
                                             <svg aria-label="Verified" fill="rgb(0, 149, 246)" className="inline-flex ml-1" role="img" viewBox="0 0 40 40" width="12"><title>Verified</title><path d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z" ></path></svg>
                                         )}
 
-                                        <span className="text-white ml-2">{post.caption}</span>
+                                        <span className="text-white ml-2 ">{post.caption}</span>
                                     </div>
 
 
@@ -679,12 +1019,12 @@ function Dashboard() {
 
                             <div className="flex items-center gap-3">
                                 <div className="w-11 h-11 rounded-full overflow-hidden">
-                                    <img src={flower} className="w-full h-full object-cover" />
+                                    <img src={currentUser?.avatar} className="w-full h-full object-cover cursor-pointer" />
                                 </div>
 
                                 <div>
-                                    <p className="text-white text-sm font-semibold">chaitanya_raj</p>
-                                    <p className="text-gray-400 text-xs">its_me_chaitanya</p>
+                                    <p className="text-white text-sm font-semibold cursor-pointer">{currentUser?.fullName}</p>
+                                    <p className="text-gray-400 text-xs cursor-pointer">{currentUser?.username}</p>
                                 </div>
                             </div>
 
@@ -717,11 +1057,11 @@ function Dashboard() {
                     <div className="flex justify-between items-center w-full p-2" key={index}>
 
                         <div className="flex items-center gap-3">
-                            <img src={suggest.SuggestionImage} className="w-11 h-11 rounded-full" />
+                            <img src={suggest.SuggestionImage} className="w-11 h-11 rounded-full cursor-pointer" />
 
                             <div>
-                                <p className="text-white text-sm font-semibold">{suggest.username}</p>
-                                <p className="text-gray-400 text-xs truncate max-w-40">
+                                <p className="text-white text-sm font-semibold cursor-pointer">{suggest.username}</p>
+                                <p className="text-gray-400 text-xs truncate max-w-40 cursor-pointer">
                                     {suggest.IsFollowing}
                                 </p>
                             </div>
