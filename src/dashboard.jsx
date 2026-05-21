@@ -180,23 +180,25 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        try {
-            // const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/logout", {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
+    try {
 
-
+        await fetch(
+            `${import.meta.env.VITE_API_URL}/logout`,
+            {
                 method: "POST",
                 credentials: "include"
-            });
+            }
+        );
 
-            navigate("/");
-            window.location.reload();
-        } catch (err) {
-            console.log("Logout error:", err);
-            navigate("/");
-            window.location.reload();
-        }
-    };
+        navigate("/");
+
+    } catch (err) {
+
+        console.log("Logout error:", err);
+
+        navigate("/");
+    }
+};
 
 
     useEffect(() => {
