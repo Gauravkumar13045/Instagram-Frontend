@@ -15,7 +15,7 @@ function App() {
         const checkAuth = async () => {
             try {
                 // const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/profile", {
-                const res = await fetch("http://localhost:5000/profile", {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
 
                     credentials: "include"
                 });

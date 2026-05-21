@@ -82,7 +82,7 @@ function Dashboard() {
 
     useEffect(() => {
         setTimeout(() => {
-            fetch("http://localhost:5000/posts", {
+            fetch(`${import.meta.env.VITE_API_URL}/posts`, {
                 credentials: "include"
             })
                 .then(res => {
@@ -132,7 +132,7 @@ function Dashboard() {
     const [suggestloading, setSuggestloading] = useState(true)
     useEffect(() => {
         setTimeout(() => {
-            fetch("http://localhost:5000/suggestions", {
+            fetch(`${import.meta.env.VITE_API_URL}/suggestions`, {
                 credentials: "include"
             })
                 .then(res => {
@@ -182,7 +182,7 @@ function Dashboard() {
     const handleLogout = async () => {
         try {
             // const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/logout", {
-            const res = await fetch("http://localhost:5000/logout", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/logout`, {
 
 
                 method: "POST",
@@ -273,7 +273,7 @@ function Dashboard() {
         formData.append("caption", caption);
 
         try {
-            const responseImage = await fetch("http://localhost:5000/upload", { method: "POST", body: formData, credentials: "include" });
+            const responseImage = await fetch(`${import.meta.env.VITE_API_URL}/upload`, { method: "POST", body: formData, credentials: "include" });
 
 
 
@@ -317,7 +317,7 @@ function Dashboard() {
 
     useEffect(() => {
 
-        fetch("http://localhost:5000/profile", {
+        fetch(`${import.meta.env.VITE_API_URL}/profile`, {
             credentials: "include"
         })
 

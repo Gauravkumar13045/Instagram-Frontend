@@ -87,7 +87,7 @@ function login() {
 
         try {
             // const response = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/signin", {
-            const response = await fetch("http://localhost:5000/signin", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/signin`, {
 
                 method: "POST",
                 headers: {
@@ -139,7 +139,7 @@ function login() {
 
         try {
             // const res = await fetch("https://kz9sppkz-5000.inc1.devtunnels.ms/login", {
-            const res = await fetch("http://localhost:5000/login", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
 
                 method: "POST",
                 headers: {
