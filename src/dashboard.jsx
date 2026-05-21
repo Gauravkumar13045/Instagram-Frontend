@@ -324,7 +324,7 @@ function Dashboard() {
             .then(res => res.json())
 
             .then(data => {
-                console.log(data);
+                
                 setCurrentUser(data);
             })
 
