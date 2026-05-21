@@ -191,12 +191,14 @@ function Dashboard() {
         );
 
         navigate("/");
+        window.location.reload();
 
     } catch (err) {
 
         console.log("Logout error:", err);
 
         navigate("/");
+        window.location.reload();
     }
 };
 
