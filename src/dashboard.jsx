@@ -917,8 +917,8 @@ function Dashboard() {
                                         </div>
 
                                         <div className="text-gray-400 space-x-1 font-normal">
-                                            <span className="cursor-pointer ml-0.5 text-center text-gray-400">•</span>
-                                            <a className="text-gray-400 text-sm">{post.timeAgo}</a>
+                                            <span className="cursor-pointer ml-0.5 text-center text-gray-400 hidden sm:inline">•</span>
+                                            <a className="text-gray-400 text-sm hidden sm:inline">{post.timeAgo}</a>
                                         </div>
 
                                     </div>
